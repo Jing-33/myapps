@@ -1,8 +1,20 @@
-body { 
-    margin: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    background-color: #1a1a1a; background-size: cover; background-position: center; background-repeat: no-repeat;
-    color: white; font-family: 'Microsoft JhengHei', sans-serif; text-shadow: 2px 2px 8px black;
-    transition: opacity 0.5s ease-in-out; opacity: 1;
+body {
+    background-image: url('stairwell.png');
+    background-size: cover;          /* 🎯 關鍵：讓背景圖自動完美填滿整個螢幕，不留白 */
+    background-position: center;     /* 🎯 關鍵：圖片永遠置中 */
+    background-attachment: fixed;    /* 讓背景固定，畫面滾動時不會亂跑 */
+    background-repeat: no-repeat;    /* 防止圖片像磁磚一樣重複拼貼 */
+    background-color: #1a1a1a;       /* 在圖片還沒載入完前，先用深灰色墊底，視覺上就不會卡頓 */
+    color: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
 }
 .fade-out { opacity: 0; }
 .hidden { display: none !important; }
