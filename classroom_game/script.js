@@ -95,11 +95,11 @@ function generatePuzzles() {
 }
 
 const scenes = {
-    'start': { text: "教室門被鎖住。講台上有個發光的東西。", bg: "classroom.png", options: [
+    'start': { text: "教室門被鎖住。講台上有個發光的東西。", bg: "classroom.jpg", options: [
         { text: "檢查講台", action: () => { handleAction("你拿到『小教室鑰匙』，但手臂被割傷了！HP -10", "corridor", () => { inventory.push("小教室鑰匙"); hp -= 10; }); }},
         { text: "踹門", action: () => { handleAction("門太硬了，你腳很痛... HP -5", "start", () => { hp -= 5; }); }}
     ]},
-    'corridor': { text: "走廊陰冷。地上躺著一具穿著校長制服的屍體。", bg: "corridor.png", options: [
+    'corridor': { text: "走廊陰冷。地上躺著一具穿著校長制服的屍體。", bg: "corridor.jpg", options: [
         { text: "檢查屍體", action: () => { hasClue = true; handleAction("你在屍體口袋發現紙條：『密碼邏輯皆在圖書館內』。", "corridor"); }},
         { text: "進入圖書館", next: 'library' },
         { text: "前往校長室", next: 'office' },
@@ -109,7 +109,7 @@ const scenes = {
     ]},
     'library': { 
         get text() { return `書架上筆記寫著：\n1.儲藏室急救箱機關密碼：${libPuzzle.question}\n2. 校長室保險箱密碼：${officePuzzle.question}`; }, 
-        bg: "library.png", 
+        bg: "library.jpg", 
         options: [
             { text: "翻閱舊報紙", action: () => handleAction("報紙記載慘案，你看得頭暈目眩... HP -5", "library", () => { hp -= 5; })},
             { text: "解開急救箱機關", action: () => openModal("請輸入密碼", "library_storage_puzzle"), condition: () => !inventory.includes("急救箱鑰匙") },
@@ -119,7 +119,7 @@ const scenes = {
             }, condition: () => !inventory.includes("頂樓鑰匙") },
             { text: "返回走廊", next: 'corridor' }
     ]},
-    'storage': { text: "這是一間塵封的儲藏室，裡面有個急救箱。", bg: "storage_closed.png", options: [
+    'storage': { text: "這是一間塵封的儲藏室，裡面有個急救箱。", bg: "storage_closed.jpg", options: [
         { text: "開啟急救箱", action: () => {
             if (hasUsedMedkit) { handleAction("急救箱已經空了。", "storage"); }
             else if (inventory.includes("急救箱鑰匙")) { 
@@ -130,16 +130,16 @@ const scenes = {
         }},
         { text: "返回走廊", next: 'corridor' }
     ]},
-    'storage_opened': { text: "急救箱已經被打開且清空了。", bg: "storage_opened.png", options: [{ text: "返回走廊", next: 'corridor' }]},
+    'storage_opened': { text: "急救箱已經被打開且清空了。", bg: "storage_opened.jpg", options: [{ text: "返回走廊", next: 'corridor' }]},
     'office': { 
         get text() { return inventory.includes("頂樓鑰匙") ? "保險箱已經打開，裡面空無一物。" : "保險箱閃著紅光。"; }, 
-        bg: "office.png", 
+        bg: "office.jpg", 
         options: [
             { text: "輸入密碼", action: () => openModal("請輸入保險箱密碼", "office_puzzle"), condition: () => !inventory.includes("頂樓鑰匙") },
             { text: "返回走廊", next: 'corridor' }
         ] 
     },
-    'stairwell': { text: "頂樓鐵門深鎖。", bg: "stairwell.png", options: [
+    'stairwell': { text: "頂樓鐵門深鎖。", bg: "stairwell.jpg", options: [
         { text: "使用頂樓鑰匙", action: () => { 
             playActionSound();
             handleAction("門開了！", "win"); 
@@ -147,8 +147,8 @@ const scenes = {
         { text: "嘗試撞門", action: () => { handleAction("你撞得頭破血流，但門沒開。HP -30", "stairwell", () => { hp -= 30; }); }},
         { text: "返回走廊", next: 'corridor' }
     ]},
-    'win': { text: "你逃出去了！", bg: "rooftop.png", options: [{ text: "重新開始", action: () => location.reload() }]},
-    'lose': { text: "你倒下了... 遊戲結束。", bg: "gameover.png", options: [{ text: "重新開始", action: () => location.reload() }]}
+    'win': { text: "你逃出去了！", bg: "rooftop.jpg", options: [{ text: "重新開始", action: () => location.reload() }]},
+    'lose': { text: "你倒下了... 遊戲結束。", bg: "gameover.jpg", options: [{ text: "重新開始", action: () => location.reload() }]}
 };
 
 function handleAction(msg, nextSceneId, actionFn) {
