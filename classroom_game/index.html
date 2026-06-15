@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逃生遊戲</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="stats"></div>
+
+    <h2 id="story-text">載入中...</h2>
+
+    <div id="message-box" class="hidden"></div>
+
+    <div id="button-container"></div>
+
+    <div id="password-modal" class="hidden">
+        <div class="modal-content">
+            <p id="modal-title">請輸入內容：</p>
+            <input type="text" id="password-input">
+            <button onclick="checkAnswer()">確定</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

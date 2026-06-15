@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 歡迎來到星星蘇打與魔法方塊的神祕大廳 ✨ (你的名字/暱稱)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pudding-yellow': '#FFF9E6',
+                        'berry-pink': '#FFC6C2',
+                        'milk-tea': '#E8D7C5',
+                    },
+                    boxShadow: {
+                        'cute': '0 10px 0px #D4A373, 0 15px 20px rgba(212, 163, 115, 0.3)',
+                        'cute-hover': '0 6px 0px #D4A373, 0 10px 15px rgba(212, 163, 115, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Noto+Sans+TC:wght=500;900&display=swap');
+        body {
+            font-family: 'Kosugi Maru', 'Noto Sans TC', sans-serif;
+            background-image: 
+                radial-gradient(circle at 20% 20%, #FFF9E6 0%, transparent 15%),
+                radial-gradient(circle at 80% 80%, #FFEDEC 0%, transparent 15%);
+        }
+        /* 特製超高對比文字陰影，確保按鈕上的白字絕對清晰爆亮 */
+        .text-heavy-shadow {
+            text-shadow: 2px 2px 0px #4A2E16, -1px -1px 0px #4A2E16, 1px -1px 0px #4A2E16, -1px 1px 0px #4A2E16, 2px 3px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-[#FFFDF9] text-stone-700 min-h-screen flex flex-col justify-between selection:bg-pink-100 selection:text-pink-600 relative overflow-hidden">
+
+    <div class="absolute text-5xl opacity-[0.03] top-10 left-10 pointer-events-none select-none">✨</div>
+    <div class="absolute text-5xl opacity-[0.03] bottom-20 right-10 pointer-events-none select-none">🥤</div>
+    <div class="absolute text-5xl opacity-[0.03] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">🌟</div>
+
+    <header class="py-16 text-center relative z-10">
+        <div class="inline-block bg-white border-4 border-[#C4A484] rounded-full px-10 py-4 shadow-[0_6px_0px_#A07855] mb-4">
+            <h1 class="text-2xl md:text-4xl font-black tracking-wider text-[#FF7582] flex items-center justify-center gap-2">
+                ✨ 星星蘇打與魔法方塊 ✨
+            </h1>
+        </div>
+        <p class="text-[#BCA38A] text-sm tracking-widest font-black uppercase mt-2">🎮 歡迎光臨！請選擇你想開啟的神祕傳送門 🎮</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-4 w-full flex-grow flex items-center relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+            
+            <div class="bg-white/90 backdrop-blur-sm border-4 border-[#C4A484] rounded-3xl p-6 shadow-cute transition-all duration-200 hover:shadow-cute-hover hover:translate-y-1 flex flex-col justify-between group">
+                <div>
+                    <h2 class="text-2xl font-black text-stone-800 mb-3 group-hover:text-[#FF7582] transition-colors pt-2">
+                        密室逃脫：校園驚魂
+                    </h2>
+                    <p class="text-stone-500 text-sm leading-relaxed mb-6">
+                        稍微有點小緊張的解謎遊戲！一起探索校園走廊，解開圖書館的神祕謎題，小心維持 HP 逃出生天唷！
+                    </p>
+                </div>
+                <a href="classroom_game/index.html" class="block w-full py-4 text-center text-lg font-black bg-[#FF8B94] hover:bg-[#FF7582] text-white rounded-2xl transition-all tracking-wider shadow-[0_5px_0px_#D15B64] text-heavy-shadow active:translate-y-0.5 active:shadow-[0_2px_0px_#D15B64]">
+                    開啟冒險 🔑
+                </a>
+            </div>
+
+            <div class="bg-white/90 backdrop-blur-sm border-4 border-[#C4A484] rounded-3xl p-6 shadow-cute transition-all duration-200 hover:shadow-cute-hover hover:translate-y-1 flex flex-col justify-between group">
+                <div>
+                    <h2 class="text-2xl font-bold text-stone-800 mb-3 group-hover:text-[#D4A373] transition-colors pt-2">
+                        幸運隨機搖獎機
+                    </h2>
+                    <p class="text-stone-500 text-sm leading-relaxed mb-6">
+                        今天不知道要吃什麼或無法做決定嗎？把選擇交給神祕的命運轉盤準沒錯！還支援一鍵剔除不喜歡的選項唷！
+                    </p>
+                </div>
+                <a href="random_picker/index.html" class="block w-full py-4 text-center text-lg font-black bg-[#FFA666] hover:bg-[#FF9447] text-white rounded-2xl transition-all tracking-wider shadow-[0_5px_0px_#D4722A] text-heavy-shadow active:translate-y-0.5 active:shadow-[0_2px_0px_#D4722A]">
+                    召喚命運 ✨
+                </a>
+            </div>
+
+            <div class="bg-white/90 backdrop-blur-sm border-4 border-[#C4A484] rounded-3xl p-6 shadow-cute transition-all duration-200 hover:shadow-cute-hover hover:translate-y-1 flex flex-col justify-between group">
+                <div>
+                    <h2 class="text-2xl font-bold text-stone-800 mb-3 group-hover:text-[#66BB6A] transition-colors pt-2">
+                        經典俄羅斯方塊 Pro
+                    </h2>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                        經典好玩的方塊消消樂！擁有超流暢的方塊旋轉和閃爍消行特效，還可以自動幫你紀錄最高的得分分數呢！
+                    </p>
+                </div>
+                <a href="tetris/index.html" class="block w-full py-4 text-center text-lg font-black bg-[#72C3F2] hover:bg-[#4AAFF0] text-white rounded-2xl transition-all tracking-wider shadow-[0_5px_0px_#3792CC] text-heavy-shadow active:translate-y-0.5 active:shadow-[0_2px_0px_#3792CC]">
+                    開始挑戰 🎮
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-xs text-stone-400 border-t border-stone-100 relative z-10">
+        <p>✨ Welcome to the Play Portal // VER 1.4 // All Rights Reserved ✨</p>
+    </footer>
+
+</body>
+</html>
