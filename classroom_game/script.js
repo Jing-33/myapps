@@ -41,7 +41,7 @@ function generatePuzzles() {
         { id: 17, question: "2 + 2 = ?", answer: "4" },
         { id: 18, question: "9 - 3 = ?", answer: "6" },
         { id: 19, question: "5 * 2 = ?", answer: "10" },
-        { id: 20, version: "18 / 3 = ?", answer: "6" },
+        { id: 20, question: "18 / 3 = ?", answer: "6" },
         { id: 21, question: "7 + 4 = ?", answer: "11" },
         { id: 22, question: "10 + 10 = ?", answer: "20" },
         { id: 23, question: "15 - 7 = ?", answer: "8" },
@@ -77,15 +77,19 @@ function generatePuzzles() {
         { id: 25, question: "5 * 5 = ?", answer: "25" }
     ];
 
+    // 讀取上一局 ID (若無則為 null)
     const lastLibId = parseInt(localStorage.getItem('lastLibId'));
     const lastOfficeId = parseInt(localStorage.getItem('lastOfficeId'));
 
+    // 過濾掉上一局用過的題目
     const availableLib = libPool.filter(p => p.id !== lastLibId);
     const availableOffice = officePool.filter(p => p.id !== lastOfficeId);
 
+    // 隨機選題
     libPuzzle = availableLib[Math.floor(Math.random() * availableLib.length)];
     officePuzzle = availableOffice[Math.floor(Math.random() * availableOffice.length)];
 
+    // 存入新 ID
     localStorage.setItem('lastLibId', libPuzzle.id);
     localStorage.setItem('lastOfficeId', officePuzzle.id);
 }
@@ -104,7 +108,7 @@ const scenes = {
         { text: "徘徊在走廊...", action: () => { handleAction("你感覺背後有一雙眼睛盯著你，嚇得渾身發抖！HP -5", "corridor", () => { hp -= 5; }); }}
     ]},
     'library': { 
-        get text() { return `書架上筆記寫著：\n1.儲藏室急急救箱機關密碼：${libPuzzle.question}\n2. 校長室保險箱密碼：${officePuzzle.question}`; }, 
+        get text() { return `書架上筆記寫著：\n1.儲藏室急救箱機關密碼：${libPuzzle.question}\n2. 校長室保險箱密碼：${officePuzzle.question}`; }, 
         bg: "library.png", 
         options: [
             { text: "翻閱舊報紙", action: () => handleAction("報紙記載慘案，你看得頭暈目眩... HP -5", "library", () => { hp -= 5; })},
@@ -116,7 +120,7 @@ const scenes = {
             { text: "返回走廊", next: 'corridor' }
     ]},
     'storage': { text: "這是一間塵封的儲藏室，裡面有個急救箱。", bg: "storage_closed.png", options: [
-        { text: "開啟急急救箱", action: () => {
+        { text: "開啟急救箱", action: () => {
             if (hasUsedMedkit) { handleAction("急救箱已經空了。", "storage"); }
             else if (inventory.includes("急救箱鑰匙")) { 
                 hasUsedMedkit = true; 
@@ -168,10 +172,7 @@ function updateScene(sceneId) {
     const scene = scenes[sceneId];
     document.body.classList.add('fade-out');
     setTimeout(() => {
-        // 🎯 核心優化：將背景路徑自動由 .png 轉為讀取載入極快的 .jpg 檔
-        let finalBg = scene.bg.replace('.png', '.jpg');
-        document.body.style.backgroundImage = `url('${finalBg}')`;
-        
+        document.body.style.backgroundImage = `url('${scene.bg}')`;
         const textEl = document.getElementById('story-text');
         textEl.innerText = typeof scene.text === 'function' ? scene.text() : scene.text;
         textEl.style.display = 'block';
