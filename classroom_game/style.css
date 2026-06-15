@@ -1,10 +1,8 @@
+/* ==========================================
+   🎯 1. 全局配置與遊戲外殼
+   ========================================== */
 body {
-    background-image: url('stairwell.png');
-    background-size: cover;          /* 🎯 關鍵：讓背景圖自動完美填滿整個螢幕，不留白 */
-    background-position: center;     /* 🎯 關鍵：圖片永遠置中 */
-    background-attachment: fixed;    /* 讓背景固定，畫面滾動時不會亂跑 */
-    background-repeat: no-repeat;    /* 防止圖片像磁磚一樣重複拼貼 */
-    background-color: #1a1a1a;       /* 在圖片還沒載入完前，先用深灰色墊底，視覺上就不會卡頓 */
+    background-color: #1a1a1a;
     color: white;
     font-family: 'Noto Sans TC', sans-serif;
     display: flex;
@@ -15,17 +13,94 @@ body {
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
+    position: relative;
+    overflow-x: hidden;
 }
-.fade-out { opacity: 0; }
-.hidden { display: none !important; }
 
-#stats { font-size: 1.2rem; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; }
-#story-text { font-size: 1.8rem; margin: 20px; text-align: center; max-width: 80%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; }
-#message-box { background: rgba(200, 0, 0, 0.9); color: white; padding: 20px; border-radius: 8px; font-size: 1.5rem; margin-bottom: 20px; }
-#button-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-button { padding: 15px 30px; cursor: pointer; font-size: 1.2rem; background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; border-radius: 5px; }
-button:hover { background: rgba(255, 255, 255, 0.4); }
+/* ==========================================
+   🎯 2. 背景區塊（核心修正：支援 JPG 與絲滑轉場）
+   ========================================== */
+#background, .background, .bg-image, #bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* 確保背景乖乖待在文字和按鈕後面 */
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    /* 核心精髓：當 JavaScript 換圖片時，這行會產生 0.5 秒的淡入淡出（opacity）或漸變效果 */
+    transition: background-image 0.5s ease-in-out, opacity 0.5s ease-in-out; 
+}
 
-#password-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 999; }
-.modal-content { background: #333; padding: 40px; border-radius: 15px; text-align: center; border: 2px solid #555; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-#password-input { padding: 10px; font-size: 1.5rem; width: 200px; border-radius: 5px; border: 1px solid #ccc; text-align: center; }
+/* ==========================================
+   🎯 3. 遊戲文字與狀態欄 (HP、背包)
+   ========================================== */
+#status-container {
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+}
+
+#text-container {
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-blur: sm;
+    padding: 30px 40px;
+    border-radius: 15px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.4rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    border: 2px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================
+   🎯 4. 遊戲互動按鈕區
+   ========================================== */
+#choices-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    max-width: 800px;
+    width: 100%;
+}
+
+button, .btn {
+    background: rgba(30, 30, 30, 0.9);
+    color: #e0e0e0;
+    border: 2px solid #555;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 滑鼠滑入按鈕的發光與微調特效 */
+button:hover, .btn:hover {
+    background: #ffffff;
+    color: #111111;
+    border-color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* 按鈕按下去的沉降感 */
+button:active, .btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
