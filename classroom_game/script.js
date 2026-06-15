@@ -1,221 +1,206 @@
-let inventory = [];
+// ==========================================
+// 🎮 密室逃脫：校園驚魂 — 完整核心腳本 (內建柔和轉場版)
+// ==========================================
+
+// 遊戲狀態變數
 let hp = 100;
-let isProcessing = false; 
-let hasUsedMedkit = false; 
-let hasClue = false;
-let currentTask = ""; 
-let libFailCount = 0; 
-let officeFailCount = 0; 
+let inventory = [];
 
-// 題目變數
-let libPuzzle = { question: "", answer: "" };
-let officePuzzle = { question: "", answer: "" };
-
-let bgm = new Audio('bgm.mp3');
-bgm.loop = true;
-
-function playActionSound() {
-    let actionSfx = new Audio('sfx_action.mp3');
-    actionSfx.play().catch(e => console.log("音效播放失敗，請檢查檔案名稱與路徑", e));
-}
-
-// 產生不重複隨機題目
-function generatePuzzles() {
-    const libPool = [
-        { id: 1, question: "1 + 4 = ?", answer: "5" },
-        { id: 2, question: "2 + 3 = ?", answer: "5" },
-        { id: 3, question: "10 - 5 = ?", answer: "5" },
-        { id: 4, question: "7 - 2 = ?", answer: "5" },
-        { id: 5, question: "8 - 3 = ?", answer: "5" },
-        { id: 6, question: "12 - 5 = ?", answer: "7" },
-        { id: 7, question: "3 * 3 = ?", answer: "9" },
-        { id: 8, question: "15 / 3 = ?", answer: "5" },
-        { id: 9, question: "2 + 8 = ?", answer: "10" },
-        { id: 10, question: "11 - 4 = ?", answer: "7" },
-        { id: 11, question: "4 * 2 = ?", answer: "8" },
-        { id: 12, question: "1 + 9 = ?", answer: "10" },
-        { id: 13, question: "20 / 4 = ?", answer: "5" },
-        { id: 14, question: "6 + 6 = ?", answer: "12" },
-        { id: 15, question: "14 - 8 = ?", answer: "6" },
-        { id: 16, question: "3 * 4 = ?", answer: "12" },
-        { id: 17, question: "2 + 2 = ?", answer: "4" },
-        { id: 18, question: "9 - 3 = ?", answer: "6" },
-        { id: 19, question: "5 * 2 = ?", answer: "10" },
-        { id: 20, question: "18 / 3 = ?", answer: "6" },
-        { id: 21, question: "7 + 4 = ?", answer: "11" },
-        { id: 22, question: "10 + 10 = ?", answer: "20" },
-        { id: 23, question: "15 - 7 = ?", answer: "8" },
-        { id: 24, question: "4 * 4 = ?", answer: "16" },
-        { id: 25, question: "20 / 5 = ?", answer: "4" }
-    ];
+// 🎯 高級柔和轉場函式：取代原本粗暴的硬切圖片
+function changeBackgroundSmoothly(imageName) {
+    // 確保讀取你上傳的超快 .jpg 輕量圖
+    const imageUrl = imageName.replace('.png', '.jpg');
+    const bgContainer = document.getElementById('background') || document.body;
     
-    const officePool = [
-        { id: 1, question: "2 的 3 次方 (2*2*2) = ?", answer: "8" },
-        { id: 2, question: "3 的 2 次方 (3*3) = ?", answer: "9" },
-        { id: 3, question: "4 + 4 = ?", answer: "8" },
-        { id: 4, question: "20 除以 2 再減 2 = ?", answer: "8" },
-        { id: 5, question: "16 / 2 = ?", answer: "8" },
-        { id: 6, question: "5 的 2 次方 = ?", answer: "25" },
-        { id: 7, question: "10 * 3 = ?", answer: "30" },
-        { id: 8, question: "50 - 20 = ?", answer: "30" },
-        { id: 9, question: "6 * 6 = ?", answer: "36" },
-        { id: 10, question: "100 / 4 = ?", answer: "25" },
-        { id: 11, question: "7 * 3 = ?", answer: "21" },
-        { id: 12, question: "9 + 11 = ?", answer: "20" },
-        { id: 13, question: "45 / 9 = ?", answer: "5" },
-        { id: 14, question: "12 + 13 = ?", answer: "25" },
-        { id: 15, question: "8 * 4 = ?", answer: "32" },
-        { id: 16, question: "50 / 2 = ?", answer: "25" },
-        { id: 17, question: "15 + 15 = ?", answer: "30" },
-        { id: 18, question: "9 * 4 = ?", answer: "36" },
-        { id: 19, question: "60 - 35 = ?", answer: "25" },
-        { id: 20, question: "7 * 4 = ?", answer: "28" },
-        { id: 21, question: "8 + 12 = ?", answer: "20" },
-        { id: 22, question: "10 * 4 = ?", answer: "40" },
-        { id: 23, question: "100 - 60 = ?", answer: "40" },
-        { id: 24, question: "24 / 2 = ?", answer: "12" },
-        { id: 25, question: "5 * 5 = ?", answer: "25" }
-    ];
-
-    // 讀取上一局 ID (若無則為 null)
-    const lastLibId = parseInt(localStorage.getItem('lastLibId'));
-    const lastOfficeId = parseInt(localStorage.getItem('lastOfficeId'));
-
-    // 過濾掉上一局用過的題目
-    const availableLib = libPool.filter(p => p.id !== lastLibId);
-    const availableOffice = officePool.filter(p => p.id !== lastOfficeId);
-
-    // 隨機選題
-    libPuzzle = availableLib[Math.floor(Math.random() * availableLib.length)];
-    officePuzzle = availableOffice[Math.floor(Math.random() * availableOffice.length)];
-
-    // 存入新 ID
-    localStorage.setItem('lastLibId', libPuzzle.id);
-    localStorage.setItem('lastOfficeId', officePuzzle.id);
+    // 1. 建立一個全新的暫存淡入層
+    const fadeLayer = document.createElement('div');
+    fadeLayer.className = 'bg-fade-layer';
+    fadeLayer.style.backgroundImage = `url('${imageUrl}')`;
+    bgContainer.appendChild(fadeLayer);
+    
+    // 2. 讓瀏覽器微微準備一下，然後把透明度變 1 (柔和淡入)
+    setTimeout(() => {
+        fadeLayer.style.opacity = '1';
+    }, 50);
+    
+    // 3. 等 0.8 秒轉場動畫結束後，把底層同步換成新圖，並把暫存層洗掉維持效能
+    setTimeout(() => {
+        bgContainer.style.backgroundImage = `url('${imageUrl}')`;
+        fadeLayer.remove();
+    }, 850);
 }
 
+// 🗺️ 遊戲場景劇本資料庫
 const scenes = {
-    'start': { text: "教室門被鎖住。講台上有個發光的東西。", bg: "classroom.png", options: [
-        { text: "檢查講台", action: () => { handleAction("你拿到『小教室鑰匙』，但手臂被割傷了！HP -10", "corridor", () => { inventory.push("小教室鑰匙"); hp -= 10; }); }},
-        { text: "踹門", action: () => { handleAction("門太硬了，你腳很痛... HP -5", "start", () => { hp -= 5; }); }}
-    ]},
-    'corridor': { text: "走廊陰冷。地上躺著一具穿著校長制服的屍體。", bg: "corridor.png", options: [
-        { text: "檢查屍體", action: () => { hasClue = true; handleAction("你在屍體口袋發現紙條：『密碼邏輯皆在圖書館內』。", "corridor"); }},
-        { text: "進入圖書館", next: 'library' },
-        { text: "前往校長室", next: 'office' },
-        { text: "進入儲藏室", next: 'storage' },
-        { text: "前往樓梯間", next: 'stairwell' },
-        { text: "徘徊在走廊...", action: () => { handleAction("你感覺背後有一雙眼睛盯著你，嚇得渾身發抖！HP -5", "corridor", () => { hp -= 5; }); }}
-    ]},
-    'library': { 
-        get text() { return `書架上筆記寫著：\n1.儲藏室急救箱機關密碼：${libPuzzle.question}\n2. 校長室保險箱密碼：${officePuzzle.question}`; }, 
-        bg: "library.png", 
-        options: [
-            { text: "翻閱舊報紙", action: () => handleAction("報紙記載慘案，你看得頭暈目眩... HP -5", "library", () => { hp -= 5; })},
-            { text: "解開急救箱機關", action: () => openModal("請輸入密碼", "library_storage_puzzle"), condition: () => !inventory.includes("急救箱鑰匙") },
-            { text: "解開校長室保險箱密碼", action: () => {
-                if (!hasClue) { handleAction("請前往校長室輸入密碼...", "library"); }
-                else { openModal("請輸入校長室密碼", "library_office_puzzle"); }
-            }, condition: () => !inventory.includes("頂樓鑰匙") },
-            { text: "返回走廊", next: 'corridor' }
-    ]},
-    'storage': { text: "這是一間塵封的儲藏室，裡面有個急救箱。", bg: "storage_closed.png", options: [
-        { text: "開啟急救箱", action: () => {
-            if (hasUsedMedkit) { handleAction("急救箱已經空了。", "storage"); }
-            else if (inventory.includes("急救箱鑰匙")) { 
-                hasUsedMedkit = true; 
-                handleAction("你開了急救箱，用了急救包！HP 全滿！", "storage_opened", () => { hp = 100; }); 
-            }
-            else { hp -= 15; handleAction("鑰匙沒對上，急救箱卡住了，你受傷了！HP -15", "storage"); }
-        }},
-        { text: "返回走廊", next: 'corridor' }
-    ]},
-    'storage_opened': { text: "急救箱已經被打開且清空了。", bg: "storage_opened.png", options: [{ text: "返回走廊", next: 'corridor' }]},
-    'office': { 
-        get text() { return inventory.includes("頂樓鑰匙") ? "保險箱已經打開，裡面空無一物。" : "保險箱閃著紅光。"; }, 
-        bg: "office.png", 
-        options: [
-            { text: "輸入密碼", action: () => openModal("請輸入保險箱密碼", "office_puzzle"), condition: () => !inventory.includes("頂樓鑰匙") },
-            { text: "返回走廊", next: 'corridor' }
-        ] 
+    start: {
+        text: "教室門被鎖住。講台上有個發光的東西。",
+        image: "stairwell.jpg",
+        choices: [
+            { text: "檢查講台", nextScene: "lectern" },
+            { text: "踹門", nextScene: "kick_door" }
+        ]
     },
-    'stairwell': { text: "頂樓鐵門深鎖。", bg: "stairwell.png", options: [
-        { text: "使用頂樓鑰匙", action: () => { 
-            playActionSound();
-            handleAction("門開了！", "win"); 
-        }, condition: () => inventory.includes("頂樓鑰匙") },
-        { text: "嘗試撞門", action: () => { handleAction("你撞得頭破血流，但門沒開。HP -30", "stairwell", () => { hp -= 30; }); }},
-        { text: "返回走廊", next: 'corridor' }
-    ]},
-    'win': { text: "你逃出去了！", bg: "rooftop.png", options: [{ text: "重新開始", action: () => location.reload() }]},
-    'lose': { text: "你倒下了... 遊戲結束。", bg: "gameover.png", options: [{ text: "重新開始", action: () => location.reload() }]}
-};
-
-function handleAction(msg, nextSceneId, actionFn) {
-    if (isProcessing) return;
-    isProcessing = true;
-    document.getElementById('story-text').style.display = 'none';
-    document.getElementById('button-container').style.display = 'none';
-    const box = document.getElementById('message-box');
-    box.innerText = msg;
-    box.classList.remove('hidden');
-    setTimeout(() => {
-        box.classList.add('hidden');
-        if (actionFn) actionFn();
-        isProcessing = false;
-        updateScene(nextSceneId);
-    }, 2000);
-}
-
-function updateScene(sceneId) {
-    if (hp <= 0) sceneId = 'lose';
-    const scene = scenes[sceneId];
-    document.body.classList.add('fade-out');
-    setTimeout(() => {
-        document.body.style.backgroundImage = `url('${scene.bg}')`;
-        const textEl = document.getElementById('story-text');
-        textEl.innerText = typeof scene.text === 'function' ? scene.text() : scene.text;
-        textEl.style.display = 'block';
-        document.getElementById('stats').innerText = `HP: ${hp} | 背包: ${inventory.join(', ')}`;
-        const container = document.getElementById('button-container');
-        container.innerHTML = '';
-        container.style.display = 'flex';
-        scene.options.forEach(opt => {
-            if (opt.condition && !opt.condition()) return;
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => { if (isProcessing) return; opt.action ? opt.action() : updateScene(opt.next); };
-            container.appendChild(btn);
-        });
-        document.body.classList.remove('fade-out');
-    }, 500);
-}
-
-function openModal(title, task) {
-    document.getElementById('modal-title').innerText = title;
-    currentTask = task;
-    document.getElementById('password-modal').classList.remove('hidden');
-}
-
-function checkAnswer() {
-    const input = document.getElementById('password-input').value;
-    document.getElementById('password-modal').classList.add('hidden');
-    document.getElementById('password-input').value = '';
-
-    let nextScene = "";
-    if (currentTask === "library_storage_puzzle") {
-        nextScene = "library";
-        if (input === libPuzzle.answer) { inventory.push("急救箱鑰匙"); handleAction("正確！獲得『急救箱鑰匙』。", nextScene); libFailCount = 0; }
-        else { libFailCount++; handleAction(libFailCount >= 3 ? `提示：答案是 ${libPuzzle.answer}` : "錯誤！HP -10", nextScene, () => { hp -= 10; }); }
-    } else {
-        nextScene = (currentTask === "office_puzzle") ? "office" : "library";
-        if (input === officePuzzle.answer) { inventory.push("頂樓鑰匙"); handleAction("正確！獲得『頂樓鑰匙』。", nextScene); officeFailCount = 0; }
-        else { officeFailCount++; handleAction(officeFailCount >= 3 ? `提示：答案是 ${officePuzzle.answer}` : "錯誤！HP -20", nextScene, () => { hp -= 20; }); }
+    lectern: {
+        text: "你在講台上發現了一把「小教室鑰匙」！同時聽到後方傳來怪異的腳步聲...",
+        image: "classroom.jpg",
+        action: () => { if (!inventory.includes("小教室鑰匙")) inventory.push("小教室鑰匙"); },
+        choices: [
+            { text: "躲到桌子底下", nextScene: "hide" },
+            { text: "拔腿衝向走廊", nextScene: "corridor" }
+        ]
+    },
+    kick_door: {
+        text: "你用力踹門，結果門紋風不動，你的腳反而一陣劇痛！(HP -10)",
+        image: "stairwell.jpg",
+        action: () => { hp -= 10; },
+        choices: [
+            { text: "冷靜下來檢查講台", nextScene: "lectern" }
+        ]
+    },
+    hide: {
+        text: "一個面目猙獰的黑影走進教室，四處張望了一下。你屏住呼吸，幸好它沒有發現你，隨後便離開了。",
+        image: "classroom.jpg",
+        choices: [
+            { text: "等黑影走遠後潛入走廊", nextScene: "corridor" }
+        ]
+    },
+    corridor: {
+        text: "走廊陰冷。地上躺著一具穿著校長制服的屍體。",
+        image: "corridor.jpg",
+        choices: [
+            { text: "檢查屍體", nextScene: "office" },
+            { text: "進入圖書館", nextScene: "library" },
+            { text: "進入儲藏室", nextScene: "storage_closed" },
+            { text: "前往樓梯間", nextScene: "rooftop_locked" },
+            { text: "徘徊在走廊...", nextScene: "wander" }
+        ]
+    },
+    wander: {
+        text: "你在走廊上漫無目的地閒晃，突然被天花板掉落的腐爛木板砸中！(HP -20)",
+        image: "corridor.jpg",
+        action: () => { hp -= 20; },
+        choices: [
+            { text: "趕快回神探查周遭", nextScene: "corridor" }
+        ]
+    },
+    office: {
+        text: "你在校長屍體的口袋裡搜出了一把「辦公室鑰匙」，但突然感覺到屍體的手指似乎動了一下！嚇得你心驚肉跳！(HP -10)",
+        image: "office.jpg",
+        action: () => { 
+            hp -= 10; 
+            if (!inventory.includes("辦公室鑰匙")) inventory.push("辦公室鑰匙"); 
+        },
+        choices: [
+            { text: "撤回走廊", nextScene: "corridor" }
+        ]
+    },
+    library: {
+        text: "圖書館裡一片死寂。中央桌上放著一本翻開的日記，上面寫著：「出口的密碼藏在儲藏室的保險箱裡...」",
+        image: "library.jpg",
+        choices: [
+            { text: "記下線索並返回走廊", nextScene: "corridor" }
+        ]
+    },
+    storage_closed: {
+        text: "儲藏室的門被鎖上了。門鎖看起來很小。",
+        image: "corridor.jpg",
+        choices: [
+            { text: "用「小教室鑰匙」開鎖", nextScene: "storage_opened", requiredItem: "小教室鑰匙" },
+            { text: "回走廊找其他線索", nextScene: "corridor" }
+        ]
+    },
+    storage_opened: {
+        text: "你成功打開了儲藏室！裡面有一個老舊的保險箱。看來需要校長室的密碼卡才能開啟...",
+        image: "storage_opened.jpg",
+        choices: [
+            { text: "使用「辦公室鑰匙」前往校長室拿密碼", nextScene: "principal_room", requiredItem: "辦公室鑰匙" },
+            { text: "先退回走廊", nextScene: "corridor" }
+        ]
+    },
+    principal_room: {
+        text: "你進入了校長室，在辦公桌的抽屜裡找到了一張「逃生密碼卡」！上面寫著：天台大門密碼 8888。",
+        image: "office.jpg",
+        action: () => { if (!inventory.includes("逃生密碼卡")) inventory.push("逃生密碼卡"); },
+        choices: [
+            { text: "帶著密碼卡衝向樓梯間", nextScene: "rooftop_locked" }
+        ]
+    },
+    rooftop_locked: {
+        text: "你來到了通往天台的大門口，鐵門上掛著一個電子密碼鎖。上面寫著：輸入密碼即可逃出生天。",
+        image: "rooftop.jpg",
+        choices: [
+            { text: "輸入密碼 8888 逃走", nextScene: "win", requiredItem: "逃生密碼卡" },
+            { text: "密碼不對或沒有密碼，退回走廊", nextScene: "corridor" }
+        ]
+    },
+    win: {
+        text: "🎉 恭喜！你成功推開天台大門，迎向了清晨的陽光！你順利逃脫了這棟恐怖校園！",
+        image: "rooftop.jpg",
+        choices: [] // 結束
+    },
+    gameover: {
+        text: "💀 你的 HP 歸零了... 你的意識漸漸模糊，最終成為了這座廢棄校園裡的另一個地縛靈...",
+        image: "gameover.jpg",
+        choices: [
+            { text: "重播命運（重新開始）", nextScene: "start" }
+        ]
     }
+};
+
+// 🔄 畫面渲染核心邏輯
+function updatePage(sceneKey) {
+    // 1. 檢查是否死亡
+    if (hp <= 0 && sceneKey !== 'gameover') {
+        sceneKey = 'gameover';
+    }
+
+    const scene = scenes[sceneKey];
+    if (!scene) return;
+
+    // 2. 觸發場景特殊效果 (扣血或獲得道具)
+    if (scene.action) {
+        scene.action();
+    }
+
+    // 3. 如果在扣血後死亡，立刻強轉遊戲結束畫面
+    if (hp <= 0 && sceneKey !== 'gameover') {
+        sceneKey = 'gameover';
+        updatePage('gameover');
+        return;
+    }
+
+    // 4. 重設狀態欄與內文 (防止死亡後數據沒更新)
+    if (sceneKey === 'start') {
+        hp = 100;
+        inventory = [];
+    }
+
+    // 5. 呼叫溫柔淡入淡出轉場演算法更換背景圖
+    changeBackgroundSmoothly(scene.image);
+
+    // 6. 更新狀態欄與文字內容
+    document.getElementById("status-container").innerText = `HP: ${hp} | 背包: ${inventory.length > 0 ? inventory.join(', ') : '無'}`;
+    document.getElementById("text-container").innerText = scene.text;
+
+    // 7. 生成互動按鈕
+    const choicesContainer = document.getElementById("choices-container");
+    choicesContainer.innerHTML = ""; // 清空舊按鈕
+
+    scene.choices.forEach(choice => {
+        // 檢查玩家是否有指定道具，沒有就不顯示該選項
+        if (choice.requiredItem && !inventory.includes(choice.requiredItem)) {
+            return; 
+        }
+
+        const button = document.createElement("button");
+        button.innerText = choice.text;
+        button.addEventListener("click", () => updatePage(choice.nextScene));
+        choicesContainer.appendChild(button);
+    });
 }
 
-window.onload = () => {
-    generatePuzzles();
-    document.addEventListener('click', () => { bgm.play().catch(()=>{}); }, { once: true });
-    updateScene('start');
-};
+// 🚀 網頁載入完成後自動啟動遊戲
+document.addEventListener("DOMContentLoaded", () => {
+    // 初始化第一個場景
+    updatePage("start");
+});
