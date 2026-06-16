@@ -15,7 +15,7 @@ let bgm = new Audio('bgm.mp3');
 bgm.loop = true;
 
 function playActionSound() {
-    let actionSfx = new Audio('sfx_action.mp3');
+    const doorSound = new Audio('sfx_action.mp3');
     actionSfx.play().catch(e => console.log("音效播放失敗，請檢查檔案名稱與路徑", e));
 }
 
