@@ -5,172 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>貓貓命運決策搖獎機 ✨</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    boxShadow: {
-                        'neon-kawaii': '0 0 35px rgba(244, 63, 94, 0.5), inset 0 0 15px rgba(244, 63, 94, 0.2)',
-                        'neon-cyan': '0 0 25px rgba(34, 211, 238, 0.4)',
-                        'neon-yellow': '0 0 45px rgba(250, 204, 21, 0.7), inset 0 0 20px rgba(250, 204, 21, 0.3)',
-                        'cute-card': '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(232, 121, 249, 0.15)',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* 可愛點陣微網格 */
-        .kawaii-grid {
-            background-image: linear-gradient(to right, rgba(244, 63, 94, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(244, 63, 94, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-        /* 電玩復古掃描線 */
-        .scanlines { position: relative; overflow: hidden; }
-        .scanlines::before {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-            z-index: 2; background-size: 100% 4px; pointer-events: none;
-        }
-        /* 貓貓搖晃動畫 */
-        @keyframes neko-dance {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(-3deg); }
-            75% { transform: translateY(-2px) rotate(3deg); }
-        }
-        .animate-neko { animation: neko-dance 0.5s infinite ease-in-out; }
-
-        /* ASCII 貓貓排版修復 */
-        #neko-avatar {
-            white-space: pre !important;
-            display: inline-block;
-            text-align: left;
-        }
-
-        /* 滾動條美化 */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(244, 63, 94, 0.4);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(244, 63, 94, 0.6);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-950 min-h-screen text-white font-sans antialiased kawaii-grid relative flex flex-col justify-between selection:bg-rose-500/30">
+<body class="bg-slate-950 min-h-screen text-white font-sans antialiased kawaii-grid relative flex flex-col justify-between items-center selection:bg-rose-500/30">
 
     <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-rose-500/10 rounded-full blur-[130px] pointer-events-none"></div>
     <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[130px] pointer-events-none"></div>
 
-    <header class="border-b border-rose-500/20 bg-slate-950/60 backdrop-blur-md px-4 md:px-8 py-3.5 flex justify-between items-center z-10">
+    <header class="w-full border-b border-rose-500/20 bg-slate-950/60 backdrop-blur-md px-4 md:px-8 py-3.5 flex justify-between items-center z-10">
         <div class="flex items-center gap-2.5">
             <span class="text-xl">🐾</span>
-            <span class="text-base md:text-lg font-black tracking-widest bg-gradient-to-r from-rose-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-                CYBER_NEKO_CHOICE DX-ULTIMATE
+            <span class="text-base md:text-lg font-black tracking-widest bg-gradient-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent font-mono">
+                NEKO_DESTINY_v5.1
             </span>
         </div>
-        <div id="neko-slogan" class="text-[10px] md:text-[11px] font-mono text-rose-400/70 tracking-wider hidden sm:block"></div>
+        <div id="neko-slogan" class="text-xs text-slate-400 font-medium tracking-wide hidden md:block"></div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch z-10">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch justify-center z-10">
         
-        <section class="order-2 lg:order-1 lg:col-span-4 bg-slate-900/40 border border-white/10 rounded-2xl p-5 shadow-cute-card backdrop-blur-xl flex flex-col h-full">
+        <section class="w-full lg:col-span-5 bg-slate-900/40 border border-white/5 backdrop-blur-xl rounded-3xl p-5 shadow-cute-card flex flex-col gap-4">
             
-            <button onclick="toggleControlPanel()" class="w-full flex lg:hidden justify-between items-center border-b border-white/10 pb-2 mb-1">
-                <h2 class="font-bold text-rose-400 text-sm tracking-wider flex items-center gap-1.5">
-                    <span>✍️</span> 宿命事件設定 <span class="text-[10px] text-slate-500 font-normal ml-1">(點擊展開/收合)</span>
-                </h2>
-                <span id="fold-arrow" class="text-xs text-rose-400 transform transition-transform duration-200">▶</span>
-            </button>
-
-            <div class="hidden lg:block border-b border-white/5 pb-1 mb-3">
-                <h2 class="font-bold text-rose-400 text-sm tracking-wider flex items-center gap-1.5">
-                    <span>✍️</span> 宿命事件設定
-                </h2>
+            <div onclick="toggleControlPanel()" class="flex justify-between items-center cursor-pointer border-b border-white/5 pb-3 group">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    <h2 class="font-black text-sm tracking-widest text-slate-300 font-mono group-hover:text-rose-400 transition-colors">
+                        🐾 命運決策矩陣設定
+                    </h2>
+                </div>
+                <div class="flex items-center gap-1 text-slate-500 lg:hidden">
+                    <span class="text-xs">展開/收合</span>
+                    <span id="fold-arrow" class="text-xs transition-transform duration-300 inline-block">▶</span>
+                </div>
             </div>
 
-            <div id="control-content" class="hidden lg:flex flex-col gap-4 flex-1 justify-between">
-                <div>
-                    <div class="space-y-1">
-                        <label class="block text-[11px] font-bold text-slate-400 tracking-wider">💡 沒想法？點貓貓推薦（10大主題）：</label>
-                        <div class="grid grid-cols-2 gap-1.5 max-h-[110px] overflow-y-auto pr-1">
-                            <button onclick="injectPreset('food')" class="py-1.5 bg-gradient-to-br from-rose-500/20 to-pink-600/20 border border-rose-500/30 rounded-xl text-[11px] font-bold hover:border-rose-400 transition-all flex items-center justify-center gap-1">🍔 吃飯</button>
-                            <button onclick="injectPreset('drink')" class="py-1.5 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 rounded-xl text-[11px] font-bold hover:border-cyan-400 transition-all flex items-center justify-center gap-1">🧋 飲料</button>
-                            <button onclick="injectPreset('dessert')" class="py-1.5 bg-gradient-to-br from-amber-500/20 to-yellow-600/20 border border-amber-500/30 rounded-xl text-[11px] font-bold hover:border-yellow-400 transition-all flex items-center justify-center gap-1">🍰 點心</button>
-                            <button onclick="injectPreset('play')" class="py-1.5 bg-gradient-to-br from-purple-500/20 to-fuchsia-600/20 border border-purple-500/30 rounded-xl text-[11px] font-bold hover:border-purple-400 transition-all flex items-center justify-center gap-1">🎮 消遣</button>
-                            <button onclick="injectPreset('where')" class="py-1.5 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/30 rounded-xl text-[11px] font-bold hover:border-emerald-400 transition-all flex items-center justify-center gap-1">🗺️ 去哪</button>
-                            <button onclick="injectPreset('buy')" class="py-1.5 bg-gradient-to-br from-indigo-500/20 to-violet-600/20 border border-indigo-500/30 rounded-xl text-[11px] font-bold hover:border-indigo-400 transition-all flex items-center justify-center gap-1">🛍️ 買啥</button>
-                            <button onclick="injectPreset('watch')" class="py-1.5 bg-gradient-to-br from-red-500/20 to-orange-600/20 border border-red-500/30 rounded-xl text-[11px] font-bold hover:border-red-400 transition-all flex items-center justify-center gap-1">🎬 看啥</button>
-                            <button onclick="injectPreset('sport')" class="py-1.5 bg-gradient-to-br from-sky-500/20 to-indigo-600/20 border border-sky-500/30 rounded-xl text-[11px] font-bold hover:border-sky-400 transition-all flex items-center justify-center gap-1">🏃‍♂️ 運動</button>
-                            <button onclick="injectPreset('music')" class="py-1.5 bg-gradient-to-br from-fuchsia-500/20 to-pink-600/20 border border-fuchsia-500/30 rounded-xl text-[11px] font-bold hover:border-fuchsia-400 transition-all flex items-center justify-center gap-1">🎵 聽啥</button>
-                            <button onclick="injectPreset('study')" class="py-1.5 bg-gradient-to-br from-teal-500/20 to-emerald-600/20 border border-teal-500/30 rounded-xl text-[11px] font-bold hover:border-teal-400 transition-all flex items-center justify-center gap-1">📚 學習</button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1 mt-3 pt-2 border-t border-white/5">
-                        <label class="block text-[11px] font-bold text-cyan-400 tracking-wider">📋 大筆資料複製貼上（支援換行或逗號隔開）：</label>
-                        <textarea id="batch-input" rows="3" placeholder="在此貼上多筆資料...&#10;例如：&#10;選項一&#10;選項二&#10;選項三" 
-                                  class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 transition-all resize-none font-sans shadow-inner placeholder:text-slate-600"></textarea>
-                        <button onclick="addBatchOptions()" class="w-full py-2 bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-500/40 rounded-xl font-bold text-xs hover:border-cyan-400 hover:from-cyan-500/30 transition-all active:scale-[0.98]">
-                            💥 批 量 注 入 池 中
-                        </button>
-                    </div>
-
-                    <div class="space-y-1 mt-3 pt-2 border-t border-white/5">
-                        <label class="block text-[11px] font-bold text-slate-400 tracking-wider">或手動單筆追加：</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="option-input" placeholder="追加單個選項..." 
-                                   class="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-400 transition-all shadow-inner"
-                                   onkeypress="if(event.key === 'Enter') addOption()">
-                            <button onclick="addOption()" class="px-3 bg-slate-800 border border-white/10 rounded-xl font-bold hover:bg-slate-700 hover:text-rose-300 transition-all active:scale-95 text-xs">
-                                注入
-                            </button>
-                        </div>
+            <div id="control-content" class="hidden lg:flex flex-col gap-5">
+                
+                <div class="flex flex-col gap-2">
+                    <label class="text-[11px] font-black tracking-wider text-slate-400 font-mono">✏️ 單筆新增事件</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="option-input" placeholder="輸入事件喵..." class="flex-1 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-rose-500/50 transition-colors placeholder:text-slate-600">
+                        <button onclick="addOption()" class="px-4 py-2 bg-slate-800 border border-white/10 rounded-xl text-sm font-bold hover:bg-slate-700 active:scale-95 transition-all">新增</button>
                     </div>
                 </div>
 
-                <div class="flex flex-col flex-1 min-h-[160px] mt-3">
-                    <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 tracking-wider mb-1.5">
-                        <span>目前的選擇池 (<span id="option-count" class="text-rose-400 font-mono">0</span>)</span>
-                        <button onclick="clearAll()" class="text-rose-400 hover:text-rose-300 transition-colors">全部清除</button>
-                    </div>
-                    <div id="options-container" class="flex-1 min-h-[140px] max-h-[260px] overflow-y-auto p-2 bg-slate-950/70 rounded-xl border border-white/5 flex flex-wrap gap-1.5 content-start">
-                        </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[11px] font-black tracking-wider text-slate-400 font-mono">⚡ 批量注入資料（支援逗號或換行分開）</label>
+                    <textarea id="batch-input" rows="3" placeholder="例如：火鍋, 拉麵, 炸雞 (支援複製貼上)" class="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-rose-500/50 transition-colors placeholder:text-slate-600 resize-none font-mono text-xs"></textarea>
+                    <button onclick="addBatchOptions()" class="w-full py-2 bg-gradient-to-r from-rose-500/20 to-pink-500/20 border border-rose-500/30 text-rose-300 rounded-xl text-xs font-bold hover:from-rose-500/30 hover:to-pink-500/30 transition-all active:scale-[0.99]">
+                        ⚡ 批量注入矩陣資料
+                    </button>
                 </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-[11px] font-black tracking-wider text-slate-400 font-mono">🔮 貓貓推薦主題池</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <button onclick="injectPreset('food')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🍲 吃什麼</button>
+                        <button onclick="injectPreset('drink')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🧋 喝什麼</button>
+                        <button onclick="injectPreset('dessert')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🍰 甜點控</button>
+                        <button onclick="injectPreset('play')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🎮 做什麼</button>
+                        <button onclick="injectPreset('where')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">📍 去哪裡</button>
+                        <button onclick="injectPreset('buy')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🛍️ 買什麼</button>
+                        <button onclick="injectPreset('watch')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🎬 看什麼</button>
+                        <button onclick="injectPreset('sport')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🏃 動起來</button>
+                        <button onclick="injectPreset('music')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🎵 聽什麼</button>
+                        <button onclick="injectPreset('study')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">📚 充實自我</button>
+                        <button onclick="injectPreset('work')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">💼 工作</button>
+                        <button onclick="injectPreset('relax')" class="py-2 bg-slate-950 border border-white/5 rounded-xl text-xs hover:border-cyan-500/40 hover:text-cyan-400 transition-all font-medium">🧘 放鬆</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] font-black tracking-wider text-slate-400 font-mono">🥫 當前候選矩陣 (<span id="option-count">0</span>)</label>
+                        <button onclick="clearAll()" class="text-[10px] font-bold text-rose-400/70 hover:text-rose-400 transition-colors">清空全部</button>
+                    </div>
+                    <div id="options-container" class="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto bg-slate-950/60 p-3 rounded-xl border border-white/5 content-start"></div>
+                </div>
+
             </div>
         </section>
 
-        <section class="order-1 lg:order-2 lg:col-span-8 flex flex-col justify-between gap-5 h-full">
-            
-            <div id="screen-container" class="flex-1 bg-slate-950 border-2 border-rose-500/40 rounded-2xl shadow-neon-kawaii scanlines p-6 text-center relative flex flex-col justify-center items-center min-h-[340px] lg:min-h-[460px]">
+        <section class="lg:col-span-7 flex flex-col gap-5 w-full">
+            <div id="screen-container" class="bg-slate-900/20 border border-rose-500/40 shadow-neon-kawaii rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden scanlines min-h-[320px] md:min-h-[380px] transition-all duration-300">
                 
-                <div class="mb-4 flex flex-col items-center">
-                    <pre id="neko-avatar" class="font-mono text-xs text-rose-300 drop-shadow-[0_0_8px_rgba(244,63,94,0.4)] leading-tight select-none">
- /\___/\
-(  o.o  )
- > ^ <</pre>
-                    <div id="neko-bubble" class="text-[10px] text-cyan-300 font-mono mt-2 bg-slate-900/80 px-3 py-1 rounded-md border border-white/5 inline-block">
-                        MEOW? READY_TO_SPIN
-                    </div>
+                <pre id="neko-avatar" class="font-mono text-sm md:text-base text-rose-400 text-center leading-tight mb-3 select-none whitespace-pre h-14 flex items-center justify-center font-bold">
+ /\_/\
+( o.o )
+ > ^ <
+                </pre>
+
+                <div id="neko-bubble" class="text-[11px] font-mono text-cyan-400 bg-cyan-950/30 border border-cyan-500/20 px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
+                    MEOW? WAIT_ORDER
                 </div>
 
-                <div id="display-screen" class="text-3xl md:text-5xl lg:text-6xl font-black tracking-widest text-cyan-400 font-mono drop-shadow-[0_0_12px_rgba(34,211,238,0.5)] py-6 transition-all uppercase break-all px-4">
-                    池中無物喵
+                <div id="display-screen" class="text-2xl md:text-5xl font-black tracking-widest text-cyan-400 font-mono py-6 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)] text-center max-w-full break-words px-4">
+                    喵準備就緒
                 </div>
 
-                <div id="decision-panel" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 mt-4 flex gap-4 w-full max-w-md z-10">
-                    <button onclick="handleDecision('keep')" class="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 border border-emerald-400/30 rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:brightness-110 active:scale-95 transition-all">
-                        💖 保留在池中
+                <div id="decision-panel" class="hidden opacity-0 translate-y-2 mt-6 flex gap-4 transition-all duration-300 z-20 w-full max-w-xs">
+                    <button onclick="handleDecision('keep')" class="flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 border border-cyan-400/30 rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:brightness-110 active:scale-95 transition-all">
+                        💖 就選這個
                     </button>
-                    <button onclick="handleDecision('ban')" class="flex-1 py-3 bg-gradient-to-r from-rose-500 to-pink-600 border border-rose-400/30 rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:brightness-110 active:scale-95 transition-all">
+                    <button onclick="handleDecision('ban')" class="flex-1 py-2.5 bg-gradient-to-r from-rose-500 to-pink-600 border border-rose-400/30 rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(244,63,94,0.3)] hover:brightness-110 active:scale-95 transition-all">
                         💔 從池中踢除
                     </button>
                 </div>
@@ -186,349 +123,15 @@
 
             <button id="btn-spin" onclick="startSpin()" class="w-full py-5 md:py-6 font-black tracking-widest text-xl md:text-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-fuchsia-600 rounded-2xl shadow-neon-kawaii transition-all active:scale-[0.97] hover:scale-[1.01] hover:brightness-110 group relative overflow-hidden">
                 <span class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                🐾 啟 動 貓 貓 命 運 之 輪 🐾
+                🐾 啟動貓貓命運矩陣 🐾
             </button>
         </section>
-
     </main>
 
-    <footer class="py-2 text-center text-[10px] font-mono text-slate-600 border-t border-white/5 z-10">
-        CYBER_NEKO_ULTIMATE // HYBRID_LAYOUT_PERFECT
+    <footer class="w-full border-t border-white/5 bg-slate-950/40 backdrop-blur-md px-4 py-3 text-center text-[10px] font-mono text-slate-500 z-10 tracking-wider">
+        ENVIRONMENT: DEPLOYED_ON_GITHUB_PAGES // ALL_RIGHTS_RESERVED_BY_NEKO
     </footer>
 
-    <script>
-        const PRESETS = {
-            food: ["火鍋暢快吃", "濃厚豚骨拉麵", "脆皮韓式炸雞", "黑金鮮汁滷肉飯", "麥當勞豪飽餐", "義式窯烤大披薩", "家常排骨便當", "爭鮮迴轉壽司", "健康鮮蔬沙拉", "現包爆汁水餃"],
-            drink: ["波霸珍珠奶茶", "極致冰美式", "黃金四季春", "香濃多多綠", "小芋圓鮮奶茶", "巨無霸楊枝甘露", "芝芝多肉莓莓", "宇治抹茶拿鐵", "古早味檸檬冬瓜", "爆打香檸手搖茶"],
-            dessert: ["法式烤布蕾", "草莓千層蛋糕", "巧克力布朗尼", "脆皮黑糖吉拿棒", "抹茶宇治金時冰", "宇治焙茶生巧克力", "芋頭牛奶雪花冰", "現烤比利時鬆餅"],
-            play: ["痛快暢玩打電動", "無腦躺平追劇", "熱血球場打籃球", "西門町逛街爆買", "電影院看大片", "被窩大睡特睡", "看一本好書", "瘋狂手撕程式碼", "音樂環繞大放空"],
-            where: ["台北西門町商圈", "台中逢甲夜市", "高雄駁二特區", "宜蘭礁溪溫泉", "台南安平老街", "澎湖沙灘看海", "巷口文青公園", "舒服的自家床鋪", "巨型百貨公司"],
-            buy: ["流行新衣物", "高質感機械鍵盤", "極致抗噪耳機", "香氛蠟燭療癒小物", "酷炫模型公仔", "美味零食大禮包", "實用日常保養品", "微縮像素電子雞"],
-            watch: ["好萊塢科幻鉅作", "熱血戰鬥番動漫", "超甜戀愛偶像劇", "燒腦懸疑推理片", "爆笑網路短影音", "實況主精華剪輯", "催淚溫馨紀錄片", "經典驚悚恐怖片"],
-            sport: ["公園盡情慢跑", "室內健身房重訓", "揮汗如雨打羽球", "放鬆身心伸展瑜珈", "游泳池暢快游泳", "呼朋引伴打桌球", "居家高強度HIIT", "熱血街頭滑板"],
-            music: ["重低音電子音樂", "溫柔療癒Lo-Fi", "熱血動漫搖滾主題曲", "經典華語懷舊流行", "浪漫微醺爵士樂", "史詩交響電影配樂", "輕快獨立K-Pop", "放鬆大自然白噪音"],
-            study: ["精進前端前端切版", "背15個英文單字", "閱讀財經商業雜誌", "練習演算法LeetCode", "看科技新知YouTube", "撰寫個人技術筆記", "整理房間實踐斷捨離", "複習期末必考大綱"]
-        };
-
-        let options = [];
-        let isSpinning = false;
-        let isDeciding = false; 
-        let lastSelectedResult = ""; 
-
-        const screen = document.getElementById('display-screen');
-        const screenContainer = document.getElementById('screen-container');
-        const container = document.getElementById('options-container');
-        const decisionPanel = document.getElementById('decision-panel');
-        const countSpan = document.getElementById('option-count');
-        const input = document.getElementById('option-input');
-        const batchInput = document.getElementById('batch-input');
-        const spinBtn = document.getElementById('btn-spin');
-        const nekoAvatar = document.getElementById('neko-avatar');
-        const nekoBubble = document.getElementById('neko-bubble');
-
-        let audioCtx = null;
-
-        const NEKO_IDLE = ` /\\___/\\
-(  o.o  )
- > ^ <`;
-
-        const NEKO_SPIN = ` /\\___/\\
-(  >.<  ) ✨ 搖晃中...
- > 👅 <`;
-
-        const NEKO_WIN  = ` /\\___/\\
-(  ⚖️.⚖️ ) 💕 命運定格！
- 🐾  3  🐾`;
-
-        const NEKO_ASK  = ` /\\___/\\
-(  ?_?  ) 🤔 滿意結果嗎？
- 🐾  w  🐾`;
-
-        // 🐾 傲嬌貓貓隨機宣言
-        const SLOGANS = [
-            "貓貓系統：本喵今天心情好，才幫你選的 // 🐟",
-            "貓貓核心：選什麼都好，反正罐罐記得開 // 🥫",
-            "命運核心：聽貓大師的話，你就不會踩雷 // 🔮"
-        ];
-        const randomSlogan = SLOGANS[Math.floor(Math.random() * SLOGANS.length)];
-        document.getElementById('neko-slogan').innerText = randomSlogan;
-
-        renderOptions();
-        updateScreenPlaceholder();
-
-        // 📱 手機版專屬：控制台展開/收合切換（完全不影響電腦版）
-        function toggleControlPanel() {
-            const content = document.getElementById('control-content');
-            const arrow = document.getElementById('fold-arrow');
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                content.classList.add('flex');
-                arrow.style.transform = 'rotate(90deg)';
-            } else {
-                content.classList.remove('flex');
-                content.classList.add('hidden');
-                arrow.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-
-        function playTone(freq, duration, type = 'sine', volume = 0.2) { 
-            try {
-                initAudio();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch(e) {}
-        }
-
-        function addBatchOptions() {
-            if (isSpinning || isDeciding) return;
-            const text = batchInput.value.trim();
-            if (!text) return;
-
-            const rawItems = text.split(/[\n，,]+/);
-            let addedCount = 0;
-
-            rawItems.forEach(item => {
-                const cleaned = item.trim();
-                if (cleaned && !options.includes(cleaned)) {
-                    options.push(cleaned);
-                    addedCount++;
-                }
-            });
-
-            if (addedCount > 0) {
-                batchInput.value = ''; 
-                playTone(600, 0.1);
-                setTimeout(() => playTone(900, 0.15), 60);
-                renderOptions();
-                updateScreenPlaceholder();
-                
-                nekoBubble.innerText = `SUCCESS: INJECTED_${addedCount}_ITEMS`;
-                screen.innerText = `成功注入 ${addedCount} 筆資料`;
-                screen.className = "text-xl md:text-3xl font-black tracking-widest text-cyan-400 font-mono py-6";
-                
-                // 只有在手機版尺寸時，注入成功才自動收合
-                if(window.innerWidth < 1024) setTimeout(toggleControlPanel, 800);
-            } else {
-                playTone(200, 0.2, 'sawtooth');
-            }
-        }
-
-        function injectPreset(type) {
-            if (isSpinning || isDeciding) return;
-            options = [...PRESETS[type]];
-            renderOptions();
-            updateScreenPlaceholder();
-            hideDecisionPanel();
-            
-            playTone(600, 0.1, 'sine', 0.2);
-            setTimeout(() => playTone(800, 0.1, 'sine', 0.2), 50);
-            
-            nekoBubble.innerText = `LOADED: ${type.toUpperCase()}_MATRIX`;
-            screen.innerText = "主題矩陣載入完成";
-            screen.className = "text-xl md:text-4xl font-black tracking-widest text-rose-400 font-mono py-6";
-            
-            // 只有在手機版尺寸時才自動收合
-            if(window.innerWidth < 1024) setTimeout(toggleControlPanel, 800);
-        }
-
-        function updateScreenPlaceholder() {
-            if (options.length === 0) {
-                screen.innerText = "池中無物喵";
-                screen.className = "text-2xl md:text-4xl font-black tracking-widest text-slate-600 font-mono py-6";
-            } else {
-                screen.innerText = "喵準備就緒";
-                screen.className = "text-2xl md:text-5xl font-black tracking-widest text-cyan-400 font-mono py-6 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]";
-            }
-        }
-
-        function renderOptions() {
-            container.innerHTML = '';
-            countSpan.innerText = options.length;
-            if (options.length === 0) {
-                container.innerHTML = `<span class="text-[11px] text-slate-600 p-2 w-full text-center font-mono">MATRIX EMPTY // PASTE DATA OR CLICK PRESET</span>`;
-                return;
-            }
-            options.forEach((opt, index) => {
-                const tag = document.createElement('div');
-                tag.className = 'flex items-center gap-1.5 bg-slate-900 border border-white/10 pl-3 pr-2 py-1.5 rounded-xl text-xs text-slate-200 transition-all hover:border-rose-400/50';
-                tag.innerHTML = `<span>${opt}</span><button onclick="removeOption(${index})" class="text-slate-500 hover:text-rose-400 font-bold text-sm ml-0.5">&times;</button>`;
-                container.appendChild(tag);
-            });
-        }
-
-        function addOption() {
-            if (isSpinning || isDeciding) return;
-            const val = input.value.trim();
-            if (!val) return;
-            if (options.includes(val)) {
-                playTone(200, 0.2, 'sawtooth');
-                return;
-            }
-            options.push(val);
-            input.value = '';
-            playTone(800, 0.08);
-            renderOptions();
-            updateScreenPlaceholder();
-        }
-
-        function removeOption(index) {
-            if (isSpinning || isDeciding) return;
-            options.splice(index, 1);
-            playTone(400, 0.06);
-            renderOptions();
-            updateScreenPlaceholder();
-        }
-
-        function clearAll() {
-            if (isSpinning || isDeciding) return;
-            options = []; renderOptions();
-            updateScreenPlaceholder();
-            hideDecisionPanel();
-            playTone(150, 0.2, 'triangle');
-        }
-
-        function startSpin() {
-            if (options.length < 2) {
-                playTone(200, 0.2, 'sawtooth');
-                alert('池子裡至少要放兩個事件才能開始抽獎喵！請利用左側設定注入資料！');
-                return;
-            }
-
-            initAudio();
-            isSpinning = true;
-            spinBtn.disabled = true;
-            hideDecisionPanel();
-            
-            nekoAvatar.innerText = NEKO_SPIN;
-            nekoAvatar.classList.add('animate-neko');
-            nekoBubble.innerText = "COMPUTING_DESTINY...";
-
-            screen.className = "text-2xl md:text-5xl lg:text-6xl font-black tracking-widest text-cyan-400 font-mono py-6 drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]";
-
-            let duration = 2400;
-            let elapsed = 0;
-            let intervalTime = 100;
-
-            function runLoop() {
-                if (elapsed >= duration * 0.75) {
-                    slowDownLoop(intervalTime, duration * 0.25);
-                    return;
-                }
-
-                const randomIndex = Math.floor(Math.random() * options.length);
-                screen.innerText = options[randomIndex];
-
-                const progress = elapsed / (duration * 0.75);
-                const currentFreq = 500 + (progress * 600);
-                
-                playTone(currentFreq, 0.015, 'sine', 0.15);
-
-                elapsed += intervalTime;
-                if (intervalTime > 25) intervalTime -= 10;
-
-                setTimeout(runLoop, intervalTime);
-            }
-
-            runLoop();
-        }
-
-        function slowDownLoop(currentInterval, remainingTime) {
-            if (remainingTime <= 0) {
-                finalizeSelection();
-                return;
-            }
-            const nextInterval = currentInterval + 40;
-            setTimeout(() => {
-                const randomIndex = Math.floor(Math.random() * options.length);
-                screen.innerText = options[randomIndex];
-                
-                playTone(450, 0.03, 'sine', 0.15);
-                slowDownLoop(nextInterval, remainingTime - nextInterval);
-            }, currentInterval);
-        }
-
-        function finalizeSelection() {
-            isSpinning = false;
-            isDeciding = true; 
-            lastSelectedResult = screen.innerText;
-            
-            nekoAvatar.classList.remove('animate-neko');
-            nekoAvatar.innerText = NEKO_ASK;
-            nekoBubble.innerText = "CHOOSE O_O 保留還是剔除？";
-
-            screen.className = "text-2xl md:text-5xl lg:text-6xl font-black tracking-widest text-yellow-300 font-mono py-6 drop-shadow-[0_0_20px_rgba(250,204,21,0.7)] animate-bounce";
-            
-            showDecisionPanel();
-
-            playTone(523.25, 0.1, 'sine', 0.25);
-            setTimeout(() => playTone(659.25, 0.1, 'sine', 0.25), 60);
-            setTimeout(() => playTone(783.99, 0.1, 'sine', 0.25), 120);
-            setTimeout(() => playTone(987.77, 0.25, 'sine', 0.3), 180);
-        }
-
-        function showDecisionPanel() {
-            decisionPanel.classList.remove('hidden');
-            setTimeout(() => {
-                decisionPanel.classList.remove('opacity-0', 'translate-y-2');
-            }, 50);
-        }
-
-        function hideDecisionPanel() {
-            decisionPanel.classList.add('opacity-0', 'translate-y-2');
-            setTimeout(() => {
-                decisionPanel.classList.add('hidden');
-            }, 300);
-        }
-
-        function handleDecision(type) {
-            if (!isDeciding) return;
-            isDeciding = false;
-            hideDecisionPanel();
-            
-            if (type === 'keep') {
-                playTone(880, 0.15, 'sine', 0.25);
-                nekoAvatar.innerText = NEKO_WIN;
-                nekoBubble.innerText = "MEOW! KEEP_EVENT_SUCCESS";
-                spinBtn.disabled = false;
-            } else if (type === 'ban') {
-                const index = options.indexOf(lastSelectedResult);
-                if (index !== -1) {
-                    options.splice(index, 1);
-                    renderOptions();
-                }
-
-                playTone(150, 0.35, 'triangle', 0.3);
-                nekoAvatar.innerText = ` /\\___/\\
-(  X.X  ) 💔 踢除成功！
- > 👅 <`;
-                nekoBubble.innerText = "BAN_STREAM_OK!!";
-                screenContainer.className = screenContainer.className.replace('border-rose-500/40 shadow-neon-kawaii', 'border-pink-600 shadow-neon-pink bg-rose-950/20');
-                screen.innerText = "EVENT REMOVED";
-                screen.className = "text-2xl md:text-5xl lg:text-6xl font-black tracking-widest text-rose-500 font-mono py-6";
-
-                setTimeout(() => {
-                    screenContainer.className = screenContainer.className.replace('border-pink-600 shadow-neon-pink bg-rose-950/20', 'border-rose-500/40 shadow-neon-kawaii');
-                    nekoAvatar.innerText = NEKO_IDLE;
-                    nekoBubble.innerText = "MEOW? WAIT_ORDER";
-                    updateScreenPlaceholder();
-                    spinBtn.disabled = false;
-                }, 1200);
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

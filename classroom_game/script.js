@@ -66,7 +66,7 @@ function generatePuzzles() {
         { id: 14, question: "12 + 13 = ?", answer: "25" },
         { id: 15, question: "8 * 4 = ?", answer: "32" },
         { id: 16, question: "50 / 2 = ?", answer: "25" },
-        { id: 17, question: "15 + 15 = ?", answer: "30" },
+        { id: 17, xquestion: "15 + 15 = ?", answer: "30" },
         { id: 18, question: "9 * 4 = ?", answer: "36" },
         { id: 19, question: "60 - 35 = ?", answer: "25" },
         { id: 20, question: "7 * 4 = ?", answer: "28" },
@@ -103,7 +103,11 @@ const scenes = {
         { text: "檢查屍體", action: () => { hasClue = true; handleAction("你在屍體口袋發現紙條：『密碼邏輯皆在圖書館內』。", "corridor"); }},
         { text: "進入圖書館", next: 'library' },
         { text: "前往校長室", next: 'office' },
-        { text: "進入儲藏室", next: 'storage' },
+        { text: "進入儲藏室", action: () => {
+            // 如果急救箱開過了，進儲藏室就直接強制去打開的場景，不然就去正常的儲藏室
+            if (hasUsedMedkit) { updateScene('storage_opened'); } 
+            else { updateScene('storage'); }
+        }},
         { text: "前往樓梯間", next: 'stairwell' },
         { text: "徘徊在走廊...", action: () => { handleAction("你感覺背後有一雙眼睛盯著你，嚇得渾身發抖！HP -5", "corridor", () => { hp -= 5; }); }}
     ]},
@@ -112,7 +116,7 @@ const scenes = {
         bg: "library.jpg", 
         options: [
             { text: "翻閱舊報紙", action: () => handleAction("報紙記載慘案，你看得頭暈目眩... HP -5", "library", () => { hp -= 5; })},
-            { text: "解開急救箱機關", action: () => openModal("請輸入密碼", "library_storage_puzzle"), condition: () => !inventory.includes("急救箱鑰匙") },
+            { text: "解開急救箱機關", action: () => openModal("請輸入密碼", "library_storage_puzzle"), condition: () => !inventory.includes("急救箱鑰匙") && !hasUsedMedkit },
             { text: "解開校長室保險箱密碼", action: () => {
                 if (!hasClue) { handleAction("請前往校長室輸入密碼...", "library"); }
                 else { openModal("請輸入校長室密碼", "library_office_puzzle"); }
@@ -121,12 +125,14 @@ const scenes = {
     ]},
     'storage': { text: "這是一間塵封的儲藏室，裡面有個急救箱。", bg: "storage_closed.jpg", options: [
         { text: "開啟急救箱", action: () => {
-            if (hasUsedMedkit) { handleAction("急救箱已經空了。", "storage"); }
-            else if (inventory.includes("急救箱鑰匙")) { 
+            if (inventory.includes("急救箱鑰匙")) { 
                 hasUsedMedkit = true; 
+                // 成功開啟後：跳提示、2秒後自動轉移到 storage_opened 場景（換成已打開的圖，且只會有返回按鈕）
                 handleAction("你開了急救箱，用了急救包！HP 全滿！", "storage_opened", () => { hp = 100; }); 
+            } else { 
+                hp -= 15; 
+                handleAction("鑰匙沒對上，急救箱卡住了，你受傷了！HP -15", "storage"); 
             }
-            else { hp -= 15; handleAction("鑰匙沒對上，急救箱卡住了，你受傷了！HP -15", "storage"); }
         }},
         { text: "返回走廊", next: 'corridor' }
     ]},

@@ -1,19 +1,176 @@
+/* ==========================================
+   1. 全域佈局與 RWD 行動裝置優化
+   ========================================== */
 body { 
-    margin: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    background-color: #1a1a1a; background-size: cover; background-position: center; background-repeat: no-repeat;
-    color: white; font-family: 'Microsoft JhengHei', sans-serif; text-shadow: 2px 2px 8px black;
-    transition: opacity 0.5s ease-in-out; opacity: 1;
+    margin: 0; 
+    /* 改用 min-height，確保手機版內容變多時可以向下捲動，避免畫面被裁切 */
+    min-height: 100vh; 
+    /* 處理行動裝置可能因為瀏覽器工具列導致 100vh 跑版的問題 */
+    min-height: 100dvh; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    background-color: #1a1a1a; 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    color: white; 
+    font-family: 'Microsoft JhengHei', sans-serif; 
+    text-shadow: 2px 2px 8px black;
+    transition: opacity 0.5s ease-in-out; 
+    opacity: 1;
+    /* 增加內邊距，防止手機版內容直接貼到螢幕邊緣 */
+    padding: 20px; 
+    box-sizing: border-box; 
 }
+
 .fade-out { opacity: 0; }
 .hidden { display: none !important; }
 
-#stats { font-size: 1.2rem; margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; }
-#story-text { font-size: 1.8rem; margin: 20px; text-align: center; max-width: 80%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; }
-#message-box { background: rgba(200, 0, 0, 0.9); color: white; padding: 20px; border-radius: 8px; font-size: 1.5rem; margin-bottom: 20px; }
-#button-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-button { padding: 15px 30px; cursor: pointer; font-size: 1.2rem; background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; border-radius: 5px; }
-button:hover { background: rgba(255, 255, 255, 0.4); }
+/* ==========================================
+   2. 遊戲資訊與主文字區域
+   ========================================== */
+#stats { 
+    font-size: 1.2rem; 
+    margin-bottom: 20px; 
+    background: rgba(0,0,0,0.6); 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+}
 
-#password-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 999; }
-.modal-content { background: #333; padding: 40px; border-radius: 15px; text-align: center; border: 2px solid #555; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-#password-input { padding: 10px; font-size: 1.5rem; width: 200px; border-radius: 5px; border: 1px solid #ccc; text-align: center; }
+#story-text { 
+    font-size: 1.6rem; /* 微調字體大小，在手機上比較耐看 */
+    margin: 20px 0; 
+    text-align: center; 
+    max-width: 600px; /* 限制寬度，在電腦版上不會拉得太寬 */
+    width: 100%;
+    background: rgba(0,0,0,0.5); 
+    padding: 20px; 
+    border-radius: 10px; 
+    box-sizing: border-box;
+    white-space: pre-line; /* 保持 script.js 裡面的 \n 換行效果 */
+}
+
+#message-box { 
+    background: rgba(200, 0, 0, 0.9); 
+    color: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    font-size: 1.4rem; 
+    margin-bottom: 20px; 
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   3. 遊戲場景選項按鈕區 (支援 RWD 自動流動排列)
+   ========================================== */
+#button-container { 
+    display: flex; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    width: 100%;
+    max-width: 600px;
+}
+
+/* 通用按鈕基礎設定 */
+button { 
+    padding: 15px 25px; 
+    cursor: pointer; 
+    font-size: 1.1rem; 
+    background: rgba(255, 255, 255, 0.15); 
+    color: white; 
+    border: 1px solid rgba(255, 255, 255, 0.6); 
+    border-radius: 8px; 
+    transition: all 0.2s ease;
+    height: auto; /* 確保高度由內邊距決定，不被外部強行拉伸 */
+}
+
+/* 只有主畫面場景的按鈕才具有彈性伸縮 RWD 排列 */
+#button-container button { 
+    flex: 1 1 200px; 
+    /* 關鍵修正：限制按鈕最大寬度，避免只有一個按鈕時強行拉到滿版 */
+    max-width: 280px; 
+    width: 100%; /* 確保在極小螢幕下可以自動縮小 */
+}
+
+button:hover { 
+    background: rgba(255, 255, 255, 0.35); 
+    border-color: white;
+    transform: translateY(-2px); /* 稍微懸浮，增加老師要求的良好互動感 */
+}
+
+/* ==========================================
+   4. 密碼輸入彈窗區 (已修正電腦版按鈕拉長變形問題)
+   ========================================== */
+#password-modal { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.85); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 999; 
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content { 
+    background: #2a2a2a; 
+    padding: 30px; 
+    border-radius: 15px; 
+    text-align: center; 
+    border: 2px solid #555; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    align-items: center; /* 讓內部元件橫向置中，不強行拉伸(stretch) */
+    max-width: 400px; 
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+/* 獨立修正：限制彈窗內部「確定」按鈕的寬高，不讓它暴走變形 */
+.modal-content button {
+    flex: none; /* 取消主畫面的彈性伸縮比例 */
+    width: 120px; /* 給予精緻的固定寬度 */
+    padding: 10px 20px; /* 舒適的上下內邊距 */
+}
+
+#password-input { 
+    padding: 12px; 
+    font-size: 1.4rem; 
+    width: 100%; 
+    max-width: 240px; 
+    border-radius: 6px; 
+    border: 1px solid #666; 
+    background: #111;
+    color: white;
+    text-align: center; 
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   5. 微型螢幕極致優化 (如舊款 iPhone SE)
+   ========================================== */
+@media (max-width: 400px) {
+    #story-text { 
+        font-size: 1.3rem; 
+        padding: 15px; 
+    }
+    button { 
+        font-size: 1rem; 
+        padding: 12px 20px; 
+    }
+    #stats { 
+        font-size: 1rem; 
+    }
+}

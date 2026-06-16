@@ -1,0 +1,79 @@
+/* ==========================================================================
+   1. 自訂背景與字體優化
+   ========================================================================== */
+body {
+    /* 讓網頁背景帶有溫和的漸層色，看起來比單純的灰色更精緻 */
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   2. 卡片登場動畫（讓網頁載入時有微微浮現的效果）
+   ========================================================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 應用在主遊戲外框 */
+.max-w-2xl {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* ==========================================================================
+   3. 拼圖卡片（Word Button）的視覺微調
+   ========================================================================== */
+#word-zone button {
+    cursor: pointer;
+    /* 增加平滑過渡時間，讓 hover 變色、active 縮小時感覺更流暢 */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 當單字卡被隱藏（opacity-0）時，讓它平滑消失，而不是瞬間不見 */
+#word-zone button.opacity-0 {
+    transition: all 0.3s ease-out;
+    transform: scale(0.8);
+}
+
+/* ==========================================================================
+   4. 答案籃內的單字卡「浮動感」
+   ========================================================================== */
+#answer-zone span {
+    animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    user-select: none; /* 避免使用者連續快速點擊時，不小心選取到文字變藍色 */
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ==========================================================================
+   5. 美化瀏覽器的滾動條（隨插即用的小細節，UX 加分）
+   ========================================================================== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

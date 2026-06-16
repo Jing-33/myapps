@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文法救星 - 英文句子重組拼圖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-2xl">
+        
+        <div class="flex justify-between items-center border-b pb-4 mb-6">
+            <h1 class="text-xl font-bold text-slate-800">🧩 英文句子重組拼圖</h1>
+            <div class="text-sm font-semibold text-slate-600 bg-slate-200 px-3 py-1 rounded-full">
+                得分：<span id="score" class="text-indigo-600 font-bold">0</span>
+            </div>
+        </div>
+
+        <div id="game-container">
+            
+            <div id="study-container" class="mb-6 animate-fade-in">
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl mb-4">
+                    <h2 class="font-bold text-amber-800 text-lg mb-1">📖 考前預習模式</h2>
+                    <p class="text-sm text-amber-700">請先仔細閱讀以下 10 個本局考題句子，記好語法結構後，點擊下方按鈕開始挑戰！</p>
+                </div>
+                
+                <div id="study-list" class="space-y-2.5 max-h-[300px] overflow-y-auto pr-2 mb-6 text-sm">
+                    </div>
+
+                <button id="btn-start-quiz" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-100 transition-all active:scale-95 text-base">
+                    🚀 我準備好了，開始測驗！
+                </button>
+            </div>
+
+            <div id="quiz-play-zone" class="hidden">
+                <div class="mb-6">
+                    <p class="text-sm text-slate-400 mb-1">進度：<span id="progress">1 / 10</span></p>
+                    <h2 class="text-lg font-medium text-slate-700 bg-indigo-50 p-3 rounded-lg border-l-4 border-indigo-500">
+                        💡 中文提示：<span id="hint-text">這裡會顯示中文翻譯提示</span>
+                    </h2>
+                </div>
+                <div class="mb-6">
+                <p class="text-sm font-medium text-slate-500 mb-2">你的排列答案：</p>
+                <div id="answer-zone" class="min-h-[60px] p-3 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-wrap gap-2 items-center">
+                    <span class="text-slate-400 italic text-sm">請點擊下方的單字拼圖...</span>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <p class="text-sm font-medium text-slate-500 mb-2">單字拼圖（請依序點選）：</p>
+                <div id="word-zone" class="flex flex-wrap gap-3 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 min-h-[60px]">
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button id="btn-reset" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-xl transition-all active:scale-95">
+                    重來 (Reset)
+                </button>
+                <button id="btn-check" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95">
+                    檢查答案 (Check)
+                </button>
+            </div>
+        </div>
+
+        <div id="result-container" class="hidden text-center py-8">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">🎉 挑戰完成！</h2>
+            <p class="text-xl text-slate-600 mb-6">你的最終得分是：<span id="final-score" class="text-indigo-600 font-extrabold text-2xl">0</span> 分</p>
+            <button id="btn-restart" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-lg transition-all active:scale-95">
+                再玩一次
+            </button>
+        </div>
+
+    </div>
+
+    <audio id="snd-correct" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+    <audio id="snd-wrong" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-84.wav" preload="auto"></audio>
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+
+    <div id="quiz-modal" class="hidden fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center scale-95 transition-all duration-300">
+            <div id="modal-icon" class="text-6xl mb-4">🎉</div>
+            <h3 id="modal-title" class="text-2xl font-bold text-slate-800 mb-2">太棒了！</h3>
+            <p id="modal-message" class="text-slate-600 mb-6 text-sm">答對了！太厲害了！</p>
+            
+            <button id="btn-modal-next" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95">
+                下一題 (Next)
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
